@@ -27,14 +27,23 @@ jobs:
     # This is important to avoid been hacked
     # DANGER: never add the label whitout check the GitHub Action code!!!
     
-    if: ${{ github.event_name == 'push' ||
-            ( 
-              github.event.action == 'pull_request_target' &&
-              contains(github.event.pull_request.labels.*.name, 'safe to test')
-            )
-         }}
+#     if: ${{ github.event_name == 'push' ||
+#             ( 
+#               github.event.action == 'pull_request_target' &&
+#               contains(github.event.pull_request.labels.*.name, 'safe to test')
+#             )
+#          }}
     
     steps:
+    - name: github-event-name
+      run: echo github.event_name ${{github.event_name}}
+    - name: github-event-action
+      run: echo github.event_action ${{github.event_action}}
+    - name: github-label1
+      run: echo github.event.pull_request.labels.*.name ${{github.event.pull_request.labels.*.name}}
+    - name: github-label2
+      run: echo github.event.pull_request_target.labels.*.name ${{github.event.pull_request_target.labels.*.name}}
+      
     - uses: actions/checkout@v2
       with:
         fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
