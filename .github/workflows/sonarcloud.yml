@@ -34,9 +34,9 @@ jobs:
     # This is important to avoid been hacked
     # DANGER: never add the label whitout check the GitHub Action code!!!
     
-    if: ${{ github.event_name == 'pull_request' ||
-            github.event_name == 'push' ||
-            (github.event.action == 'pull_request_target' && startsWith(github.event.pull_request.labels.*.name, 'safe to test') }}
+    if: |
+      github.event_name == 'pull_request' || github.event_name == 'push' ||
+      (github.event.action == 'pull_request_target' && startsWith(github.event.pull_request.labels.*.name, 'safe to test') }}
     
     steps:
     - uses: actions/checkout@v2
