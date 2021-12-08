@@ -35,21 +35,17 @@ jobs:
 #          }}
     
     steps:
-    - name: github-event-name
-      run: echo github.event_name ${{github.event_name}}
-    - name: github-event-action
-      run: echo github.event_action ${{github.event_action}}
-    - name: github-label1
-      run: echo github.event.pull_request.labels.*.name ${{github.event.pull_request.labels.*.name}}
-    - name: github-label2
-      run: echo github.event.pull_request_target.labels.*.name ${{github.event.pull_request_target.labels.*.name}}
-      
-    - uses: actions/checkout@v2
-      with:
-        fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
-        
-    - name: SonarCloud Scan
-      uses: SonarSource/sonarcloud-github-action@master
+    - name: Dump GitHub context
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        GITHUB_CONTEXT: ${{ toJson(github) }}
+      run: echo "$GITHUB_CONTEXT"
+      
+#     - uses: actions/checkout@v2
+#       with:
+#         fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+        
+#     - name: SonarCloud Scan
+#       uses: SonarSource/sonarcloud-github-action@master
+#       env:
+#         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+#         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
