@@ -20,6 +20,6 @@ function greeter(person: Person) {
 
 let user = new Student("Charles", "H.", "Santos");
 let password = "it should't be here"
-let token = "this neither"
+let token = "just to trigger a build"
 
 document.body.textContent = greeter(user);
