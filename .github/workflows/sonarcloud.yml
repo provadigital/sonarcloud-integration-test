@@ -22,6 +22,8 @@ jobs:
   sonarcloud:
     name: SonarCloud
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     
     # If the event is from pull_request_target, must have a label
     # This is important to avoid been hacked
@@ -43,9 +45,13 @@ jobs:
     - uses: actions/checkout@v2
       with:
         fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+        ref: ${{ github.event.pull_request.head.sha }}
         
     - name: SonarCloud Scan
       uses: SonarSource/sonarcloud-github-action@master
+      with:
+          # SonarCloud doesn't treat pull_request_target, so we need this
+          args: -Dsonar.pullrequest.key=${{ github.event.pull_request.number }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
