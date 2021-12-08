@@ -1,14 +1,46 @@
-name: SonarCloud
+name: '[QE] SonarCloud'
+
 on:
+
+  # Trigger when the master is updated
   push:
     branches:
-      - main
+    - master
+    - main
+  
+  # Trigger on internal PR 
+  pull_request:
+      types:
+      - opened
+      - synchronize
+      - reopened
+  
+  # Trigger on label approval
+  # You MUST analyze the code before
   pull_request_target:
-      types: [opened, synchronize, reopened]
+    branches:
+    - master
+    - main
+    types:
+    - labeled
+      
 jobs:
+
   sonarcloud:
     name: SonarCloud
     runs-on: ubuntu-latest
+    
+    # If the event is from pull_request_target, must have a label
+    # This is important to avoid been hacked
+    # DANGER: never add the label whitout check the GitHub Action code!!!
+    
+    if: |
+      ${{   github.event_name == 'pull_request'
+         || github.event_name == 'push'
+         || ( github.event.action == 'pull_request_target' 
+         &&   contains(github.event.pull_request.labels.*.name, 'safe to test' )
+       }}
+    
     steps:
       - uses: actions/checkout@v2
         with:
