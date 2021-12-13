@@ -1,3 +1,10 @@
+# D A N G E R - Read it, please!
+#
+# If the event is from pull_request_target, must have a label 'safe to test'
+# and you MUST only give this label if there's no changes on Workflow files.
+#
+# This is important to avoid been hacked.
+
 name: '[QE] SonarCloud'
 
 on:
@@ -7,51 +14,53 @@ on:
     branches:
     - master
     - main
+    - chore/*
+    - feature/*
+    - fix/*
    
-  # Trigger on label approval
-  # You MUST analyze the code before
-#   pull_request_target:
-#     branches:
-#     - master
-#     - main
-#     types:
-#     - labeled
-
-  pull_request:
+  # Trigger after label approval
+  pull_request_target:
     branches:
     - master
     - main
+    types:
+    - labeled
 
 jobs:
 
+  # Job for SonarCloud analysis
+  # You must set the right SONAR_TOKEN token on your secrets
   sonarcloud:
+  
     name: SonarCloud
     runs-on: ubuntu-latest
+        
+    # Don't allow code changes from Workflows
     permissions:
       contents: read
     
-    # If the event is from pull_request_target, must have a label
-    # This is important to avoid been hacked
-    # DANGER: never add the label whitout check the GitHub Action code!!!
-    
-#     if: ${{ github.event_name == 'push' ||
-#             ( 
-#               github.event_name == 'pull_request_target' &&
-#               contains(github.event.label.name, 'safe to test')
-#             )
-#          }}
+    # Only run if it's PUSH or has 'safe to test' label
+    if: ${{ github.event_name == 'push' ||
+            ( 
+              github.event_name == 'pull_request_target' &&
+              contains(github.event.label.name, 'safe to test')
+            )
+         }}
     
     steps:
-    - name: Dump GitHub context
-      env:
-        GITHUB_CONTEXT: ${{ toJson(github) }}
-      run: echo "$GITHUB_CONTEXT"
-      
-    - uses: actions/checkout@v2
+    
+    ## To debug, enable it
+    #- name: Dump GitHub context
+    #  env:
+    #    GITHUB_CONTEXT: ${{ toJson(github) }}
+    #  run: echo "$GITHUB_CONTEXT"
+        
+    - name: Checkout
+      uses: actions/checkout@v2
       with:
         fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
         ref: ${{ github.event.pull_request.head.sha }}
-        
+
     - name: SonarCloud Scan
       uses: SonarSource/sonarcloud-github-action@master
       with:
