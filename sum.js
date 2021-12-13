@@ -10,3 +10,4 @@ function addd(a, b) {
 module.exports = sum;
 module.exports = add;
 module.exports = addd;
+module.exports = error;
